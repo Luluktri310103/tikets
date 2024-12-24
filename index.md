@@ -1,6 +1,89 @@
-## folder klien indek.php ##
+### SQL ###
+```sql
+-- phpMyAdmin SQL Dump
+-- version 5.0.4
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Waktu pembuatan: 17 Des 2024 pada 06.17
+-- Versi server: 10.4.17-MariaDB
+-- Versi PHP: 7.3.27
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `ticketstore`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tickets`
+--
+
+CREATE TABLE `tickets` (
+  `id` int(11) NOT NULL,
+  `destination` varchar(30) DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `stock` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data untuk tabel `tickets`
+--
+
+INSERT INTO `tickets` (`id`, `destination`, `date`, `price`, `stock`) VALUES
+(1, 'Jakarta - Kota Metropolitan', '2024-12-10', '550000.00', 90),
+(2, 'Bandung - Kota Kembang', '2024-12-11', '320000.00', 140),
+(3, 'Surabaya - Kota Pahlawan', '2024-12-12', '480000.00', 75),
+(4, 'Yogyakarta - Kota Budaya', '2024-12-13', '360000.00', 110),
+(5, 'Bali - Pulau Dewata', '2024-12-14', '620000.00', 55),
+(6, 'Medan - Kota Bersejarah', '2024-12-15', '500000.00', 85),
+(7, 'Makassar - Kota Pelabuhan', '2024-12-16', '470000.00', 70),
+(8, 'Semarang - Kota Pelayaran', '2024-12-17', '400000.00', 95),
+(9, 'Palembang - Kota Musi', '2024-12-18', '430000.00', 65),
+(10, 'Balikpapan - Kota Minyak', '2024-12-19', '510000.00', 80),
+(11, 'Semarang - Purwokerto', '2024-12-20', '250000.00', 70);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indeks untuk tabel `tickets`
+--
+ALTER TABLE `tickets`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT untuk tabel yang dibuang
+--
+
+--
+-- AUTO_INCREMENT untuk tabel `tickets`
+--
+ALTER TABLE `tickets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+```
+
+### Index.html ###
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -219,3 +302,124 @@
     </script>
 </body>
 </html>
+
+
+```
+###  ###
+```
+<?php
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+$method = $_SERVER['REQUEST_METHOD'];
+$request = [];
+
+if (isset($_SERVER['PATH_INFO'])) {
+    $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
+}
+
+function getConnection() {
+    $host = 'localhost';
+    $db   = 'ticketstore';
+    $user = 'root';
+    $pass = ''; // Ganti dengan password MySQL Anda jika ada
+    $charset = 'utf8mb4';
+
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    try {
+        return new PDO($dsn, $user, $pass, $options);
+    } catch (\PDOException $e) {
+        throw new \PDOException($e->getMessage(), (int)$e->getCode());
+    }
+}
+
+function response($status, $data = NULL) {
+    header("HTTP/1.1 " . $status);
+    if ($data) {
+        echo json_encode($data);
+    }
+    exit();
+}
+
+$db = getConnection();
+
+switch ($method) {
+    case 'GET':
+        if (!empty($request) && isset($request[0])) {
+            $id = $request[0];
+            $stmt = $db->prepare("SELECT * FROM tickets WHERE id = ?");
+            $stmt->execute([$id]);
+            $ticket = $stmt->fetch();
+            if ($ticket) {
+                response(200, $ticket);
+            } else {
+                response(404, ["message" => "Ticket not found"]);
+            }
+        } else {
+            $stmt = $db->query("SELECT * FROM tickets");
+            $tickets = $stmt->fetchAll();
+            response(200, $tickets);
+        }
+        break;
+    
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->destination) || !isset($data->date) || !isset($data->price) || !isset($data->stock)) {
+            response(400, ["message" => "Missing required fields"]);
+        }
+        $sql = "INSERT INTO tickets (destination, date, price, stock) VALUES (?, ?, ?, ?)";
+        $stmt = $db->prepare($sql);
+        if ($stmt->execute([$data->destination, $data->date, $data->price, $data->stock])) {
+            response(201, ["message" => "Ticket created", "id" => $db->lastInsertId()]);
+        } else {
+            response(500, ["message" => "Failed to create ticket"]);
+        }
+        break;
+    
+    case 'PUT':
+        if (empty($request) || !isset($request[0])) {
+            response(400, ["message" => "Ticket ID is required"]);
+        }
+        $id = $request[0];
+        $data = json_decode(file_get_contents("php://input"));
+        if (!isset($data->destination) || !isset($data->date) || !isset($data->price) || !isset($data->stock)) {
+            response(400, ["message" => "Missing required fields"]);
+        }
+        $sql = "UPDATE tickets SET destination = ?, date = ?, price = ?, stock = ? WHERE id = ?";
+        $stmt = $db->prepare($sql);
+        if ($stmt->execute([$data->destination, $data->date, $data->price, $data->stock, $id])) {
+            response(200, ["message" => "Ticket updated"]);
+        } else {
+            response(500, ["message" => "Failed to update ticket"]);
+        }
+        break;
+
+    case 'DELETE':
+        if (empty($request) || !isset($request[0])) {
+            response(400, ["message" => "Ticket ID is required"]);
+        }
+        $id = $request[0];
+        $sql = "DELETE FROM tickets WHERE id = ?";
+        $stmt = $db->prepare($sql);
+        if ($stmt->execute([$id])) {
+            response(200, ["message" => "Ticket deleted"]);
+        } else {
+            response(500, ["message" => "Failed to delete ticket"]);
+        }
+        break;
+    
+    default:
+        response(405, ["message" => "Method not allowed"]);
+        break;
+}
+?>
+
+```
+
