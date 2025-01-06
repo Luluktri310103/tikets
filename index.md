@@ -423,3 +423,123 @@ switch ($method) {
 
 ```
 
+### css navbar ###
+```
+ /* Styling Navbar */
+    .navbar {
+        background-color: #003366; /* Dark Blue */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%; /* Memastikan navbar memenuhi layar penuh */
+        z-index: 1000;
+        padding: 15px 0; /* Padding navbar */
+    }
+
+    .navbar-brand {
+        font-size: 2rem;
+        font-weight: bold;
+        color: white !important;
+    }
+
+    .navbar-brand:hover {
+        color: #ffcc00 !important;
+    }
+
+    .navbar-nav .nav-link {
+        color: white !important;
+        font-size: 1.2rem;
+        padding: 12px 25px;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Hover effect for navbar links */
+    .navbar-nav .nav-link:hover {
+        color: #ffcc00 !important;
+        background-color: #00509e;
+        border-radius: 5px;
+    }
+
+    .navbar-nav .nav-link.logout-btn {
+        background-color: #dc3545;  /* Red color for logout */
+        color: white;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .navbar-nav .nav-link.logout-btn:hover {
+        background-color: #c82333;
+    }
+
+    /* Container - Full width */
+    .container {
+        width: 100%; /* Memastikan container menggunakan lebar penuh */
+        padding: 20px;
+        box-sizing: border-box; /* Menyesuaikan padding tanpa mempengaruhi ukuran */
+    }
+
+    h1 {
+        font-size: 3rem;
+        color: #495057;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    /* Card */
+    .card {
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
+    }
+```
+### css navbar ###
+```
+ <!-- Navbar with Home Link -->
+   <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand" href="#">Daftar Klinik</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <a class="nav-link active" href="home.php">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.php">Daftar Klinik</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="contact.php">Kontak</a>
+            </li>
+            <!-- Tambahkan tombol logout di sini -->
+            <li class="nav-item">
+                <a class="nav-link logout-btn" href="javascript:logout()">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+    <h1>Selamat Datang di Daftar Klinik</h1>
+
+    <div class="card p-4 mb-4">
+        <h5>Kenapa menggunakan Daftar Klinik?</h5>
+        <p>Website ini menyediakan daftar lengkap klinik yang dapat diakses oleh masyarakat. Anda dapat mencari klinik berdasarkan ID, nama, atau lokasi. Tambahkan klinik baru, edit informasi klinik yang sudah ada, atau hapus data klinik yang tidak diperlukan.</p>
+    </div>
+ <div class="card p-4 mb-4">
+        <div class="search-bar">
+            <div class="col">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari berdasarkan ID">
+            </div>
+            <div class="btn-group">
+                <button onclick="searchClinic()" class="btn btn-primary">Cari</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#clinicModal">
+                    Tambah Klinik
+                </button>
+            </div>
+        </div>
+    </div>
+```
+
