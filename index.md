@@ -543,3 +543,28 @@ switch ($method) {
     </div>
 ```
 
+
+```
+function logout() {
+            // Logic for logging out (clear session, redirect, etc.)
+            alert('You have been logged out');
+            window.location.href = 'login.php';  // Redirect to login page
+        }
+```
+
+```
+<?php
+session_start();  // Mulai sesi jika belum dimulai
+
+// Hapus semua variabel sesi
+session_unset();
+
+// Hapus sesi itu sendiri
+session_destroy();
+
+// Kirimkan respons sukses
+echo json_encode(['success' => true]);
+?>
+
+```
+
