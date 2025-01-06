@@ -553,18 +553,27 @@ function logout() {
 ```
 
 ```
-<?php
-session_start();  // Mulai sesi jika belum dimulai
+/* Table */
+    .table {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%; /* Memastikan tabel memenuhi lebar layar */
+    }
 
-// Hapus semua variabel sesi
-session_unset();
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 15px 20px; /* Padding tabel agar lebih luas */
+    }
 
-// Hapus sesi itu sendiri
-session_destroy();
+    .table th {
+        background-color: #003366;
+        color: white;
+    }
 
-// Kirimkan respons sukses
-echo json_encode(['success' => true]);
-?>
+    .table td {
+        background-color: #f8f9fa;
+    }
 
 ```
 
